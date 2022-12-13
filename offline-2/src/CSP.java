@@ -1,10 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class CSP {
+
     Variable[][] grid;
     LinkedList<Variable> unassignedVars;
     int N;
@@ -12,12 +11,20 @@ public class CSP {
     int[] colUnassignedCount;
     VariableOrderHeuristic usedHeuristic;
 
+    long numberOfTotalNodes;
+    long backtracks;
+
+    boolean useForwardChecking;
+
+    private int s = 0;
 
 
-    public CSP( String fileName , int heuristicNumber) {
+    public CSP( String fileName , int heuristicNumber, boolean useForwardChecking) {
         readFromFile(fileName);
         selectHeuristic(heuristicNumber);
+        this.useForwardChecking = useForwardChecking;
     }
+
 
     private void selectHeuristic(int i){
         if(i == 1)
@@ -32,8 +39,10 @@ public class CSP {
             usedHeuristic = new Heuristic5_Random();
     }
 
-    private void readFromFile(String filename){
+    public void readFromFile(String filename){
         Scanner scanner;
+        backtracks = 0;
+        numberOfTotalNodes = 0;
         try {
 
             scanner = new Scanner(new File(filename));
@@ -117,7 +126,7 @@ public class CSP {
 
     private LinkedList<Variable> MRV(){
         int mn = N;
-        LinkedList<Variable> mxrVars = new LinkedList<Variable>();
+        LinkedList<Variable> mxrVars = new LinkedList<>();
         for(var x : unassignedVars){
             if(x.domain.size() < mn ){
                 mn = x.domain.size();
@@ -137,7 +146,6 @@ public class CSP {
         Variable mxVar = null;
         for(var x : lst){
             int degree = rowUnassignedCount[x.index.f] + colUnassignedCount[x.index.s];
-//            System.out.println(degree);
             if(degree >= mx){
                 mx = degree;
                 mxVar = x;
@@ -159,6 +167,29 @@ public class CSP {
             }
         }
         return mnVar;
+    }
+
+    private void ValueOrderingHeuristic(Variable var){
+        int r = var.index.f;
+        int c = var.index.s;
+
+        ArrayList<pair> valueEffectList = new ArrayList<>();
+        for(var x : var.domain){
+            int count = 0;
+            for(int i = 0; i < N; ++i){
+                if( grid[i][c].value == 0 && grid[i][c].domain.contains(x)) ++count;
+            }
+            for(int i = 0; i < N; ++i){
+                if( grid[r][i].value == 0 && grid[r][i].domain.contains(x)) ++count;
+            }
+            valueEffectList.add(new pair(count, x));
+        }
+        valueEffectList.sort((Comparator.comparingInt(o -> o.f)));
+        var.domain = new LinkedList<Integer>();
+        for(var x : valueEffectList){
+            var.domain.add(x.s);
+        }
+
     }
 
     private Variable selectRandom(){
@@ -230,20 +261,78 @@ public class CSP {
             System.out.printf("%d, ", colUnassignedCount[i]);
         }
         System.out.println();
+        System.out.printf("total nodes: %d, backtracks: %d \n", numberOfTotalNodes, backtracks);
+    }
+
+    private LinkedList<Variable> ForwardChecking(Variable var){
+        LinkedList<Variable> removedFrom = new LinkedList<>();
+        pair pos = var.index;
+        int r = pos.f;
+        int c = pos.s;
+        for(int i = 0; i < N; ++i){
+            if(grid[r][i].value == 0){
+                    if(grid[r][i].domain.remove(Integer.valueOf(var.value))){
+                        removedFrom.add(grid[r][i]);
+
+                        if(grid[r][i].domain.size() == 0) {
+                            for(var x : removedFrom)
+                                x.domain.add(var.value);
+                            return null;
+                        }
+
+                    }
+            }
+
+            if(grid[i][c].value == 0){
+                if(grid[i][c].domain.remove(Integer.valueOf(var.value))){
+                    removedFrom.add(grid[i][c]);
+
+                    if(grid[i][c].domain.size() == 0) {
+                        for(var x : removedFrom)
+                            x.domain.add(var.value);
+                        return null;
+                    }
+                }
+            }
+
+        }
+
+        return removedFrom;
     }
 
     public boolean BackTrack(){
-//        System.out.println("here");
         if(unassignedVars.size() == 0) return true;
+        ++s;
+        if(s > 1000000){
+            System.out.printf("node count: %d backtrack %d unassigned size: %d\n", numberOfTotalNodes, backtracks, unassignedVars.size());
+            s = 0;
+        }
         Variable var = usedHeuristic.selectUnassignedVariable();
+        ++numberOfTotalNodes;
         unassignedVars.remove(var);
         rowUnassignedCount[var.index.f]--;
         colUnassignedCount[var.index.s]--;
+
+        LinkedList<Variable> removedFrom = new LinkedList<>();
+
+        ValueOrderingHeuristic(var);
         for(Integer x : var.domain){
             var.value = x;
             if(checkConstraint(var)){
+                if(useForwardChecking){
+                    removedFrom = ForwardChecking(var);
+                    if(removedFrom == null){
+                        continue;
+                    }
+                }
                 if(BackTrack()){
                     return true;
+                }
+
+                if(useForwardChecking){
+                    for(var y : removedFrom){
+                        y.domain.add(x);
+                    }
                 }
             }
         }
@@ -252,6 +341,7 @@ public class CSP {
         colUnassignedCount[var.index.s]++;
         var.value = 0;
         unassignedVars.add(var);
+        ++backtracks;
         return false;
     }
 

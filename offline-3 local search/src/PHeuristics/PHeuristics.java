@@ -1,6 +1,7 @@
 package PHeuristics;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import GraphColoring.Node;
 
@@ -10,6 +11,7 @@ public class PHeuristics {
     private ArrayList<Node> color1;
     private ArrayList<Node> color2;
     private ArrayList<Boolean> visited;
+    private Random random;
 
     public PHeuristics(ArrayList<Node> nodes, CalculatePenalty penalty){
         this.nodes = nodes;
@@ -17,13 +19,14 @@ public class PHeuristics {
         color1 = new ArrayList<>();
         color2 = new ArrayList<>();
         visited = new ArrayList<>();
+        this.random = new Random(23);
     }
 
-    private void dfs(Node node, int secondColor){
+    private void dfs(Node node, int firstColor, int secondColor){
         for(var x : node.getNeighbors()){
-            if(!visited.get(x.getId())){
-                visited.set(x.getId(), true);
-                if(x.getColor() == node.getColor()){
+            if(!visited.get(x.getId() - 1)){
+                visited.set(x.getId() - 1, true);
+                if(x.getColor() == firstColor){
                     color1.add(x);
                 }
                 else if(x.getColor() == secondColor){
@@ -32,32 +35,207 @@ public class PHeuristics {
                 else{
                     continue;
                 }
-                dfs(x, secondColor);
+                dfs(x, firstColor, secondColor);
             }
         }
     }
 
-    public void KempeChain(Node node, int secondColor){
+    private ArrayList<Node> findKempeChain(Node node, int secondColor){
         color1.clear();
         color2.clear();
         visited = new ArrayList<>();
         for(int i = 0; i < nodes.size(); ++i){
             visited.add(false);
         }
-        dfs(node, secondColor);
+        visited.set(node.getId() - 1, true);
+        color1.add(node);
+
+        dfs(node, node.getColor(), secondColor);
+        ArrayList<Node> chainNodes = new ArrayList<>();
+        chainNodes.addAll(color1);
+        chainNodes.addAll(color2);
+        return chainNodes;
+    }
+
+    public ArrayList<Node> PairSwap(){
+        ArrayList<Node> changedColoredNode = null;
+        for(var x : nodes){
+            for(var y : nodes){
+                if(x.getColor() == y.getColor()){
+                    continue;
+                }
+                if(x.getNeighbors().contains(y)){
+                    continue;
+                }
+                if(findKempeChain(x, y.getColor()).size() == 0
+                && findKempeChain(y, x.getColor()).size() == 0
+                ){
+                    int xc = x.getColor();
+                    x.setColor(y.getColor());
+                    y.setColor(xc);
+                    changedColoredNode = new ArrayList<>();
+                    changedColoredNode.add(x);
+                    changedColoredNode.add(y);
+                    return changedColoredNode;
+                }
+            }
+        }
+        return changedColoredNode;
+    }
+
+    public void KempeChain(Node node, int secondColor){
+        findKempeChain(node, secondColor);
         int firstColor = node.getColor();
-        for(var x : color1)
-            x.setColor(secondColor);
-        for(var x : color2)
-            x.setColor(firstColor);
-            
+        swapColor(firstColor, secondColor);
         
     }
 
-    public void oneStep(){
-        System.out.println(penalty.penalty());
-        KempeChain(nodes.get(0), 2);
-        System.out.println(penalty.penalty());
+    public Node randomNode(){
+        return nodes.get(this.random.nextInt(nodes.size()));
+    }
+
+    public int randomColor(int mxColor){
+        return this.random.nextInt(mxColor) + 1;
+    }
+
+    public int neighboringColor(Node node){
+        var x = node.getNeighbors();
+        if(x.isEmpty()){
+            return -1;
+        }
+        return x.get(this.random.nextInt(x.size())).getColor();
+    }
+
+    public void swapColor(int firstColor, int secondColor){
+        for(var x : color1){
+            x.setColor(secondColor);
+        }
+        for(var x : color2){
+            x.setColor(firstColor);
+        }
 
     }
+
+    public void reduceByKempe(int itr){
+        long prevPenalty = penalty.penalty();
+        long newPenalty;
+        int mxColor = -1;
+        int iterations = 0;
+        for(var x : nodes){
+            mxColor = Math.max(x.getColor(), mxColor);
+        }
+
+        while(iterations < itr){
+            Node node = randomNode();
+            int color = randomColor(mxColor);
+            while(color == node.getColor())
+                color = randomColor(mxColor);
+            int firstColor = node.getColor();
+            int secondColor = color;
+            KempeChain(node, color);
+            newPenalty = penalty.penalty();
+            if(prevPenalty > newPenalty){
+                prevPenalty = newPenalty;
+            }
+            else{
+                swapColor(secondColor, firstColor);
+            }
+            iterations++;
+
+        }
+    }
+
+    public void reduce(int itr){
+        reduceByKempe(itr);
+        reduceByPairSwap(itr);
+
+    }
+    public void reduceByPairSwap(int itr){
+        int iterations = 0;
+        long prevPenalty = penalty.penalty();
+        while(iterations < itr ){
+            var x = PairSwap();
+            if(x == null)
+                return;
+            long newPenalty = penalty.penalty();
+            if(newPenalty > prevPenalty){
+                Node f = x.get(0);
+                Node s = x.get(1);
+                int fcolor = f.getColor();
+                f.setColor(s.getColor());
+                s.setColor(fcolor);
+            }
+            else{
+                prevPenalty = newPenalty;
+            }
+            iterations++;
+        }
+    }
 }
+
+
+
+    // System.out.println(mxColor);
+        // while(true){
+        //     for(var x : nodes){
+        //         for(int j = 1; j <= mxColor; ++j){
+        //             if(x.getColor() != j){
+        //                 KempeChain(x, j);
+        //                 newPenalty = penalty.penalty();
+        //                 if(iterations > 1000){
+        //                     ex = true;
+        //                     break;
+        //                 }
+        //                 currentPenalty = newPenalty;
+        //                 iterations++;
+        //             }
+        //         }
+        //         if(ex)
+        //             break;
+        //     }
+        //     if(ex)
+        //         break;
+        // }
+        
+
+
+        // while(true){
+        //     for(var x : nodes){
+        //         // for(int j = 1; j <= mxColor; ++j){
+        //         //     if(x.getColor() != j){
+        //         //         KempeChain(x, j);
+        //         //         newPenalty = penalty.penalty();
+        //         //         if(iterations > 1000){
+        //         //             ex = true;
+        //         //             break;
+        //         //         }
+        //         //         currentPenalty = newPenalty;
+        //         //         iterations++;
+        //         //     }
+        //         // }
+        //         // if(ex)
+        //         //     break;
+        //         // int color = neighboringColor(x);
+        //         int color = randomColor(mxColor);
+                
+        //         while(color == x.getColor()) color = randomColor(mxColor);
+
+        //         KempeChain(x, color);
+        //         newPenalty = penalty.penalty();
+        //         iterations++;
+        //         if(currentPenalty >= newPenalty){
+        //             currentPenalty = newPenalty;
+        //             warning = 0;
+        //         }
+        //         else{
+        //             warning++;
+        //         }
+        //         if(iterations > 1000 || warning > 10){
+        //             ex = true;
+        //             break;
+        //         }
+        //     }
+        //     if(ex)
+        //         break;
+        // }
+

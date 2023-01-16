@@ -1,15 +1,13 @@
 import java.io.File;
 import java.util.ArrayList;
 import CHeuristics.CHeursitics;
+import CHeuristics.LargestDegree;
 import CHeuristics.SaturationDegree;
 import GraphColoring.GraphColoring;
 import GraphColoring.Node;
 import PHeuristics.CalculatePenalty;
 import PHeuristics.PHeuristics;
-import Penalty.ExponentialStrategy;
 import Penalty.LinearStrategy;
-import Penalty.Penalty;
-import Penalty.PenaltyStrategy;
 import Problem.Course;
 import Problem.CourseNode;
 import Problem.Spenalty;
@@ -56,11 +54,14 @@ public class App {
         var students = Student.parseStudentFile(new File(fileName + ".stu"), courses);
         
         var courseNodes = mapToCourseNode(courses);
-        CHeursitics heursitic = new SaturationDegree(courseNodes);
+        CHeursitics heursitic = new LargestDegree(courseNodes);
         GraphColoring coloring = new GraphColoring(heursitic);
         System.out.println(coloring.color());
-        CalculatePenalty penalty = new Spenalty(students, new ExponentialStrategy());
-        new PHeuristics(courseNodes, penalty).oneStep();;
+        CalculatePenalty penalty = new Spenalty(students, new LinearStrategy());
+        // penalty
+        System.out.println(penalty.penalty() * 1. / students.size());
+        new PHeuristics(courseNodes, penalty).reduce(1000);
+        System.out.println(penalty.penalty() * 1. / students.size());
 
     }
 

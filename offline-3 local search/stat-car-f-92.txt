@@ -1,0 +1,26 @@
+============./data/car-f-92===========
+Largest Degree
+colors used: 32
+Expo Strategy
+penalty: 31.125175606066065
+penalty: 12.836605309607002
+Saturation Degree
+colors used: 30
+Expo Strategy
+penalty: 29.999279564857172
+penalty: 15.123626670508987
+Largest Enrollment
+colors used: 34
+Expo Strategy
+penalty: 31.093044198696013
+penalty: 11.537048377219842
+Random
+colors used: 44
+Expo Strategy
+penalty: 22.78660711069486
+penalty: 6.68542199488491
+Saturation Degree
+colors used: 30
+Linear Strategy
+penalty: 19.306437088001154
+penalty: 9.477972695508086

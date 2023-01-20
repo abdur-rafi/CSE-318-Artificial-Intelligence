@@ -17,6 +17,8 @@ public class Penalty {
         for(var x : students){
             for(var y : x.getCourses()){
                 for(var z : x.getCourses()){
+                    if(z.getCourseNumber() == y.getCourseNumber())
+                        continue;
                     cost += strategy.penalty(y.getExamDay(), z.getExamDay());
                 }
             }

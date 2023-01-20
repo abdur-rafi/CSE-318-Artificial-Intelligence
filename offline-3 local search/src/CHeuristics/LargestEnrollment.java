@@ -14,6 +14,8 @@ public class LargestEnrollment extends CHeursitics {
 
     public LargestEnrollment(ArrayList<Node> lst){
         super(lst);
+        nodes = new ArrayList<>();
+        nodes.addAll(lst);
         i = 0;
         nodes.sort(compare());
     }

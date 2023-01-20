@@ -8,11 +8,9 @@ import GraphColoring.Node;
 public class CourseNode implements Node {
     
     Course course;
-    int color;
     ArrayList<Node> lst;
     public CourseNode(Course course){
         this.course = course;
-        color = -1;
         lst = new ArrayList<>();
     }
 
@@ -23,12 +21,11 @@ public class CourseNode implements Node {
 
     @Override
     public int getColor() {
-        return color;
+        return course.getExamDay();
     }
 
     @Override
     public void setColor(int color) {
-        this.color = color;
         course.setExamDay(color);
     }
 

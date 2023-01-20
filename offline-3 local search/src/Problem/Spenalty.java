@@ -23,4 +23,8 @@ public class Spenalty implements CalculatePenalty {
     public long penalty() {
         return penalty.cost(strategy);
     }
+    @Override
+    public double averagePenalty() {
+        return penalty() * 1. / students.size();
+    }
 }

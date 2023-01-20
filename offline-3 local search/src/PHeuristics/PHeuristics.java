@@ -1,5 +1,7 @@
 package PHeuristics;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -54,6 +56,8 @@ public class PHeuristics {
         ArrayList<Node> chainNodes = new ArrayList<>();
         chainNodes.addAll(color1);
         chainNodes.addAll(color2);
+        // if( chainNodes.size() == 1)
+        // System.out.println(chainNodes.size());
         return chainNodes;
     }
 
@@ -67,9 +71,12 @@ public class PHeuristics {
                 if(x.getNeighbors().contains(y)){
                     continue;
                 }
-                if(findKempeChain(x, y.getColor()).size() == 0
-                && findKempeChain(y, x.getColor()).size() == 0
-                ){
+                int sz1 = findKempeChain(x, y.getColor()).size();
+                int sz2 = findKempeChain(y, x.getColor()).size();
+                // if(sz1 == 1 || sz2 == 1)
+                //     System.out.println(sz1 + " " + sz2);
+                if(sz1 == 1 && sz2 == 1){
+                    // System.out.println("here");
                     int xc = x.getColor();
                     x.setColor(y.getColor());
                     y.setColor(xc);
@@ -145,8 +152,9 @@ public class PHeuristics {
         }
     }
 
-    public void reduce(int itr){
+    public void reduce(int itr, BufferedWriter writer) throws IOException{
         reduceByKempe(itr);
+        writer.write("penalty: " + penalty.averagePenalty() + "\n");
         reduceByPairSwap(itr);
 
     }
@@ -158,7 +166,7 @@ public class PHeuristics {
             if(x == null)
                 return;
             long newPenalty = penalty.penalty();
-            if(newPenalty > prevPenalty){
+            if(newPenalty >= prevPenalty){
                 Node f = x.get(0);
                 Node s = x.get(1);
                 int fcolor = f.getColor();

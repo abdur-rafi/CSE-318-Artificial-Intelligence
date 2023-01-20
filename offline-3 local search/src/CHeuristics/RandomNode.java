@@ -1,6 +1,8 @@
 package CHeuristics;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Random;
 
 import GraphColoring.Node;
@@ -8,17 +10,24 @@ import GraphColoring.Node;
 public class RandomNode extends CHeursitics {
 
     private Random random;
-    int c = 0;
+    int c = -1;
+    private ArrayList<Integer> order;
     public RandomNode(ArrayList<Node> lst){
         super(lst);
         random = new Random(31);
+        order = new ArrayList<>();
+        for(int i = 0; i < lst.size(); ++i)
+            order.add(i);
+        Collections.shuffle(order, random);
+        // for(var x : order)
+        //     System.out.println(x);
     }
 
     @Override
     public Node getNextNode() {
-        if (c > nodes.size()) return null;
         ++c;
-        return nodes.get(this.random.nextInt(nodes.size()));
+        if (c >= nodes.size()) return null;
+        return nodes.get(order.get(c));
     }
     
 }

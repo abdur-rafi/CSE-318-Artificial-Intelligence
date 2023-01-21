@@ -71,7 +71,7 @@ public class App {
 
             // f = datasets[2];
             String fileName = "./data/"+ f;
-            int iterations = 1000;
+            int iterations = 10000;
 
             writer.write("============" + fileName + "===========\n");
 
@@ -106,7 +106,7 @@ public class App {
             
             writer.write("colors used: " + coloring.color() + "\n");
             writer.write("Expo Strategy\n");
-            penalty = new Spenalty(students, new ExponentialStrategy());
+            // penalty = new Spenalty(students, new ExponentialStrategy());
             writer.write("penalty: " + penalty.averagePenalty() + "\n");
             new PHeuristics(courseNodes, penalty).reduce(iterations, writer);
             writer.write("penalty: " + penalty.averagePenalty() + "\n");
@@ -123,7 +123,7 @@ public class App {
             
             writer.write("colors used: " + coloring.color() + "\n");
             writer.write("Expo Strategy\n");
-            penalty = new Spenalty(students, new ExponentialStrategy());
+            // penalty = new Spenalty(students, new ExponentialStrategy());
             writer.write("penalty: " + penalty.averagePenalty() + "\n");
             new PHeuristics(courseNodes, penalty).reduce(iterations, writer);
             writer.write("penalty: " + penalty.averagePenalty() + "\n");
@@ -141,7 +141,7 @@ public class App {
             
             writer.write("colors used: " + coloring.color() + "\n");
             writer.write("Expo Strategy\n");
-            penalty = new Spenalty(students, new ExponentialStrategy());
+            // penalty = new Spenalty(students, new ExponentialStrategy());
             writer.write("penalty: " + penalty.averagePenalty() + "\n");
             new PHeuristics(courseNodes, penalty).reduce(iterations,writer);
             writer.write("penalty: " + penalty.averagePenalty() + "\n");

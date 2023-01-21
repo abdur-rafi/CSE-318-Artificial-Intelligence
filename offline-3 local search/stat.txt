@@ -1,0 +1,155 @@
+============./data/car-f-92===========
+Largest Degree
+colors used: 32
+Expo Strategy
+penalty: 10.615288560725338
+penalty: 4.962973016993322
+penalty: 4.742059829523861
+Saturation Degree
+colors used: 30
+Expo Strategy
+penalty: 10.266301102122808
+penalty: 5.483522449644389
+penalty: 5.3509962538682885
+Largest Enrollment
+colors used: 34
+Expo Strategy
+penalty: 10.69145990553233
+penalty: 4.468972256908627
+penalty: 4.1661870894185355
+Random
+colors used: 44
+Expo Strategy
+penalty: 7.836744665834193
+penalty: 3.144741842662468
+penalty: 2.8073185297790326
+Saturation Degree
+colors used: 30
+Linear Strategy
+penalty: 6.617405939518975
+penalty: 3.581301916499267
+penalty: 3.433628318584071
+============./data/car-s-91===========
+Largest Degree
+colors used: 34
+Expo Strategy
+penalty: 11.495716395864106
+penalty: 6.3906646971935
+penalty: 6.085553914327917
+Saturation Degree
+colors used: 31
+Expo Strategy
+penalty: 12.205790251107828
+penalty: 7.136957163958641
+penalty: 6.874918759231906
+Largest Enrollment
+colors used: 36
+Expo Strategy
+penalty: 13.772998522895126
+penalty: 5.731521418020679
+penalty: 5.339320531757755
+Random
+colors used: 46
+Expo Strategy
+penalty: 9.560236336779912
+penalty: 3.9884194977843426
+penalty: 3.5230723781388478
+Saturation Degree
+colors used: 31
+Linear Strategy
+penalty: 7.922717872968981
+penalty: 4.720236336779911
+penalty: 4.597459379615953
+============./data/kfu-s-93===========
+Largest Degree
+colors used: 20
+Expo Strategy
+penalty: 46.51598429613012
+penalty: 15.33127687418209
+penalty: 15.112357449990652
+Saturation Degree
+colors used: 19
+Expo Strategy
+penalty: 46.91774163395027
+penalty: 16.49149373714713
+penalty: 16.109553187511686
+Largest Enrollment
+colors used: 21
+Expo Strategy
+penalty: 54.56160029912133
+penalty: 13.790988969900916
+penalty: 13.486259113853057
+Random
+colors used: 24
+Expo Strategy
+penalty: 38.650775845952516
+penalty: 10.491867638810993
+penalty: 9.8975509441017
+Saturation Degree
+colors used: 19
+Linear Strategy
+penalty: 29.039446625537483
+penalty: 11.543466068424005
+penalty: 11.435034585903907
+============./data/tre-s-92===========
+Largest Degree
+colors used: 23
+Expo Strategy
+penalty: 15.90091743119266
+penalty: 9.235550458715597
+penalty: 9.1
+Saturation Degree
+colors used: 23
+Expo Strategy
+penalty: 15.842660550458715
+penalty: 9.451146788990826
+penalty: 9.392889908256882
+Largest Enrollment
+colors used: 22
+Expo Strategy
+penalty: 16.330504587155964
+penalty: 9.945183486238532
+penalty: 9.872706422018348
+Random
+colors used: 28
+Expo Strategy
+penalty: 12.879357798165138
+penalty: 6.478211009174312
+penalty: 6.371100917431193
+Saturation Degree
+colors used: 23
+Linear Strategy
+penalty: 10.14816513761468
+penalty: 6.115596330275229
+penalty: 6.087155963302752
+============./data/yor-f-83===========
+Largest Degree
+colors used: 23
+Expo Strategy
+penalty: 64.68862911795962
+penalty: 34.05844845908608
+penalty: 34.028692879914985
+Saturation Degree
+colors used: 21
+Expo Strategy
+penalty: 60.60998937300744
+penalty: 40.92136025504782
+penalty: 40.89266737513284
+Largest Enrollment
+colors used: 24
+Expo Strategy
+penalty: 63.98299681190223
+penalty: 31.176408076514345
+penalty: 31.066950053134963
+Random
+colors used: 28
+Expo Strategy
+penalty: 49.92029755579171
+penalty: 24.365568544102018
+penalty: 24.276301806588734
+Saturation Degree
+colors used: 21
+Linear Strategy
+penalty: 38.618490967056324
+penalty: 27.394261424017003
+penalty: 27.377258235919236

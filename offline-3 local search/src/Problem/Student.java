@@ -24,10 +24,10 @@ public class Student {
                 line = scanner.nextLine();
                 Student student = new Student(studentId++);
                 String[] tokens = line.split(" ");
+                students.add(student);
                 for(var x : tokens){
                     Course from = courseList.get(Integer.parseInt(x) - 1);
                     student.courses.add(from);
-                    students.add(student);
                     for(var y : tokens){
                         if(x.equalsIgnoreCase(y))
                             continue;

@@ -25,6 +25,6 @@ public class Spenalty implements CalculatePenalty {
     }
     @Override
     public double averagePenalty() {
-        return penalty() * 1. / students.size();
+        return (penalty() * 1.) / students.size();
     }
 }

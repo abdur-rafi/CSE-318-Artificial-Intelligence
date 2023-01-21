@@ -161,22 +161,47 @@ public class PHeuristics {
     public void reduceByPairSwap(int itr){
         int iterations = 0;
         long prevPenalty = penalty.penalty();
+
         while(iterations < itr ){
-            var x = PairSwap();
-            if(x == null)
+            ArrayList<Node> changedColoredNode = null;
+            boolean f = false;
+            for(var x : nodes){
+                for(var y : nodes){
+                    if(x.getColor() == y.getColor()){
+                        continue;
+                    }
+                    if(x.getNeighbors().contains(y)){
+                        continue;
+                    }
+                    int sz1 = findKempeChain(x, y.getColor()).size();
+                    int sz2 = findKempeChain(y, x.getColor()).size();
+                    if(sz1 == 1 && sz2 == 1){
+                        int xc = x.getColor();
+                        x.setColor(y.getColor());
+                        y.setColor(xc);
+                        changedColoredNode = new ArrayList<>();
+                        changedColoredNode.add(x);
+                        changedColoredNode.add(y);
+                        long newPenalty = penalty.penalty();
+                        if(newPenalty >= prevPenalty){
+                            Node first = changedColoredNode.get(0);
+                            Node second = changedColoredNode.get(1);
+                            int fcolor = first.getColor();
+                            first.setColor(second.getColor());
+                            second.setColor(fcolor);
+                        }
+                        else{
+                            prevPenalty = newPenalty;
+                        }
+                        ++iterations;
+                        f = true;
+                    }
+                }
+            }
+            if(!f){
                 return;
-            long newPenalty = penalty.penalty();
-            if(newPenalty >= prevPenalty){
-                Node f = x.get(0);
-                Node s = x.get(1);
-                int fcolor = f.getColor();
-                f.setColor(s.getColor());
-                s.setColor(fcolor);
-            }
-            else{
-                prevPenalty = newPenalty;
-            }
-            iterations++;
+            }          
+            f = false;  
         }
     }
 }

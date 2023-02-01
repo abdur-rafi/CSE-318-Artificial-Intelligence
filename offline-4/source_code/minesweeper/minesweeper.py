@@ -63,17 +63,30 @@ class Minesweeper():
         count = 0
 
         # Loop over all cells within one row and column
-        for i in range(cell[0] - 1, cell[0] + 2):
-            for j in range(cell[1] - 1, cell[1] + 2):
 
-                # Ignore the cell itself
-                if (i, j) == cell:
-                    continue
+        neighbors = []
+        i = cell[0]
+        j = cell[1]
+        if i + 1 < self.height :
+            neighbors.append((i + 1, j))
+        if i - 1 >= 0:
+            neighbors.append((i - 1, j))
+        if j + 1 < self.width : 
+            neighbors.append((i, j + 1))
+        if j - 1 >= 0:
+            neighbors.append((i,j - 1))
 
-                # Update count if cell in bounds and is mine
-                if 0 <= i < self.height and 0 <= j < self.width:
-                    if self.board[i][j]:
-                        count += 1
+
+        for (i,j) in neighbors:
+
+            # Ignore the cell itself
+            # if (i, j) == cell:
+            #     continue
+
+            # Update count if cell in bounds and is mine
+            # if 0 <= i < self.height and 0 <= j < self.width:
+            if self.board[i][j]:
+                count += 1
 
         return count
 
@@ -164,7 +177,7 @@ class MinesweeperAI():
         # List of sentences about the game known to be true
         self.knowledge = []
 
-        random.seed(13)
+        # random.seed(13)
         
 
     def mark_mine(self, cell):
@@ -200,6 +213,7 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        # print(cell)
         self.moves_made.add(cell)
         self.mark_safe(cell)
         neighbors = []
@@ -215,58 +229,72 @@ class MinesweeperAI():
             neighbors.append((i,j - 1))
         unvisitedNeighbors = set()
         for cell in neighbors:
-            if not (cell in self.safes or cell in self.mines):
+            if cell in self.mines:
+                if count > 0:
+                    count -= 1
+                elif count == 0:
+                    print("issue")
+            elif cell in self.safes:
+                pass
+            else:
                 unvisitedNeighbors.add(cell)
         
 
         sent = Sentence(unvisitedNeighbors, count)
-        # for safe in self.safes:
-        #     sent.mark_safe(safe)
-        # for mine in self.mines:
-        #     sent.mark_mine(mine)
+        if len(unvisitedNeighbors) > 0 and (not sent in self.knowledge):
+            self.knowledge.append(sent)        
 
-        # for cell in sent.known_safes():
-        #     self.mark_safe(cell)
-        # for cell in sent.known_mines():
-        #     self.mark_mine(cell)
-
-
-        self.knowledge.append(sent)
 
         changed = True
         while changed:
             changed = False
-
             for sentence1 in self.knowledge:
                 for sentence2 in self.knowledge:
-                    if len(sentence1.cells) == 0 or len(sentence2.cells) == 0:
-                        continue
                     diff = set()
                     if sentence1.cells.issubset(sentence2.cells):
                         diff = sentence2.cells.difference(sentence1.cells)
                         cnt = abs(sentence1.count - sentence2.count)
-                        print(cnt)
-                        print(diff, sentence1.cells, sentence2.cells)
+                        # print(sentence1.cells, sentence2.cells, diff)
                         if len(diff) != 0:
+                            # print("diff" , diff , len(diff))
                             snt = Sentence(diff, cnt)
-                            self.knowledge.append(snt)
-                            changed = True
+                            if not ( snt in self.knowledge):
+                                self.knowledge.append(snt)
+                                changed = True
+
 
             for sentence in self.knowledge:
                 for safe in self.safes:
                     if sentence.mark_safe(safe):
-                        changed = True
+                        if len(sentence.cells) == 0:
+                            self.knowledge.remove(sentence)
+                        else:
+                            changed = True
+
                 for mine in self.mines:
                     if sentence.mark_mine(mine):
-                        changed = True
+                        if len(sentence.cells) == 0:
+                            self.knowledge.remove(sentence)
+                        else:
+                            changed = True
 
-                sz1 = len(self.safes)
-                sz2 = len(self.mines)
-                self.safes = self.safes.union(sentence.known_safes())
-                self.mines = self.mines.union(sentence.known_mines())
-                if sz1 != len(self.safes) or sz2 != len(self.mines) :
+                newSafe = sentence.known_safes()
+                newMine = sentence.known_mines()
+                if len(newSafe) > 0:
+                    self.safes = self.safes.union(newSafe)
+                    self.knowledge.remove(sentence)
                     changed = True
-        # raise NotImplementedError
+                if len(newMine) > 0:
+                    self.mines = self.mines.union(newMine)
+                    self.knowledge.remove(sentence)
+                    changed = True
+        print("new Knowledge base")
+        for s in self.knowledge:
+            print(s)
+        print("moves",self.moves_made)
+        print("safes",self.safes)
+        print("mines",self.mines)
+
 
     def make_safe_move(self):
         """
@@ -279,7 +307,9 @@ class MinesweeperAI():
         """
         for cell in self.safes:
             if not (cell in self.moves_made):
+                print("current move, ", cell)
                 return cell
+        return None
         # raise NotImplementedError
 
     def make_random_move(self):
@@ -289,8 +319,12 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
+        # count = 0
+        # marked = set()
+        if len(self.mines) + len(self.moves_made) == self.height * self.width:
+            return None
         cell = (random.randint(0, self.height - 1), random.randint(0, self.width - 1))
-        while cell in self.moves_made:
+        while cell in self.moves_made or cell in self.mines:
             cell = (random.randint(0, self.height - 1), random.randint(0, self.width - 1))
         return cell
         # raise NotImplementedError

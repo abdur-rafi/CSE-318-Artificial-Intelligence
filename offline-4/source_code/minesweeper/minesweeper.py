@@ -213,7 +213,6 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        # print(cell)
         self.moves_made.add(cell)
         self.mark_safe(cell)
         neighbors = []
@@ -230,10 +229,7 @@ class MinesweeperAI():
         unvisitedNeighbors = set()
         for cell in neighbors:
             if cell in self.mines:
-                if count > 0:
-                    count -= 1
-                elif count == 0:
-                    print("issue")
+                count -= 1
             elif cell in self.safes:
                 pass
             else:
@@ -250,13 +246,10 @@ class MinesweeperAI():
             changed = False
             for sentence1 in self.knowledge:
                 for sentence2 in self.knowledge:
-                    diff = set()
                     if sentence1.cells.issubset(sentence2.cells):
                         diff = sentence2.cells.difference(sentence1.cells)
                         cnt = abs(sentence1.count - sentence2.count)
-                        # print(sentence1.cells, sentence2.cells, diff)
                         if len(diff) != 0:
-                            # print("diff" , diff , len(diff))
                             snt = Sentence(diff, cnt)
                             if not ( snt in self.knowledge):
                                 self.knowledge.append(snt)
@@ -288,12 +281,14 @@ class MinesweeperAI():
                     self.mines = self.mines.union(newMine)
                     self.knowledge.remove(sentence)
                     changed = True
-        print("new Knowledge base")
+        
+        print("Knowledge base")
         for s in self.knowledge:
             print(s)
-        print("moves",self.moves_made)
-        print("safes",self.safes)
-        print("mines",self.mines)
+        print("Safe cells")
+        print(self.safes)
+        print("mine cells")
+        print(self.mines)
 
 
     def make_safe_move(self):
@@ -307,7 +302,6 @@ class MinesweeperAI():
         """
         for cell in self.safes:
             if not (cell in self.moves_made):
-                print("current move, ", cell)
                 return cell
         return None
         # raise NotImplementedError
